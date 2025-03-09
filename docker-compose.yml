@@ -16,24 +16,31 @@ services:
       - app_network
 
   backend:
-    build: ../comparathor-backend  # Path to backend repo
+    build: ../comparathor-backend
     container_name: comparathor-backend
     restart: always
     depends_on:
       - mysql
+    env_file:
+      - ../comparathor-backend/.env  # Load backend .env file
     environment:
-      DATABASE_URL: "mysql://user:password@mysql:3306/mydb"
+      DB_URL: "mysql://user:password@mysql:3306/mydb"  # Override development DB
+      CORS_ORIGINS: "http://localhost"
     ports:
       - "8000:8000"
     networks:
       - app_network
 
   frontend:
-    build: ../comparathor-frontend  # Path to frontend repo
+    build: ../comparathor-frontend
     container_name: comparathor-frontend
     restart: always
     depends_on:
       - backend
+    env_file:
+      - ../comparathor-frontend/.env  # Load frontend .env file
+    environment:
+      VITE_API_BASE_URL: "http://backend:8000/api/v1"  # Adjust for Docker network
     ports:
       - "3000:3000"
     networks:
@@ -57,7 +64,7 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
     ports:
-      - "3001:3000"  # Changed to avoid conflict with frontend
+      - "3001:3000"
     networks:
       - monitoring
 
