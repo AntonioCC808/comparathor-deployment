@@ -1,0 +1,60 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": null,
+    "title": "FastAPI Monitoring Dashboard",
+    "time": { "from": "now-15m", "to": "now" },
+    "panels": [
+      {
+        "title": "Total Requests per Second",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total[5m])",
+            "legendFormat": "Requests/sec"
+          }
+        ]
+      },
+      {
+        "title": "95th Percentile Response Time",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "95th Percentile"
+          }
+        ]
+      },
+      {
+        "title": "HTTP Status Codes",
+        "type": "piechart",
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total[5m])) by (status)",
+            "legendFormat": "{{status}}"
+          }
+        ]
+      },
+      {
+        "title": "Memory Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "process_resident_memory_bytes",
+            "legendFormat": "Memory Usage"
+          }
+        ]
+      },
+      {
+        "title": "CPU Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "process_cpu_seconds_total",
+            "legendFormat": "CPU Seconds"
+          }
+        ]
+      }
+    ]
+  }
+}
