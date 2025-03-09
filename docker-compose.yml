@@ -1,9 +1,9 @@
 version: "3.8"
 
 services:
-  mysql-db:
+  mysql:
     image: mysql:8
-    container_name: mysql-db
+    container_name: mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -25,7 +25,7 @@ services:
     container_name: comparathor-backend
     restart: always
     depends_on:
-      mysql-db:
+      mysql:
         condition: service_healthy
     env_file:
       - ../comparathor-backend/.env  # Load backend .env file
@@ -48,7 +48,7 @@ services:
     environment:
       VITE_API_BASE_URL: "http://backend:8000/api/v1"  # Adjust for Docker network
     ports:
-      - "3000:3000"
+      - "4173:4173"
     networks:
       - app_network
 
