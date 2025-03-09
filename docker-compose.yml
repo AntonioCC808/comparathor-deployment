@@ -1,37 +1,67 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  mysql:
-    image: mysql:8.0
-    container_name: my-mysql
+  backend:
+    build: ../comparathor-backend  # Path to backend repo
+    container_name: comparathor-backend
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_DATABASE: your_database
-      MYSQL_USER: your_user
-      MYSQL_PASSWORD: your_password
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-
-  backend:
-    build: ../backend
-    container_name: backend
-    depends_on:
-      - mysql
-    environment:
-      DATABASE_URL: mysql+pymysql://your_user:your_password@mysql:3306/your_database
+      DATABASE_URL: "mysql://user:password@mysql:3306/mydb"
     ports:
       - "8000:8000"
+    networks:
+      - app_network
 
   frontend:
-    build: ../frontend
-    container_name: frontend
-    ports:
-      - "3000:3000"
+    build: ../comparathor-frontend  # Path to frontend repo
+    container_name: comparathor-frontend
+    restart: always
     depends_on:
       - backend
+    ports:
+      - "3000:3000"
+    networks:
+      - app_network
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    restart: always
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: always
+    volumes:
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - monitoring
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-proxy
+    restart: always
+    depends_on:
+      - backend
+      - frontend
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - app_network
+
+networks:
+  app_network:
+  monitoring:
 
 volumes:
-  mysql_data:
+  grafana_data:
