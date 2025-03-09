@@ -62,6 +62,7 @@ services:
       - "9090:9090"
     networks:
       - monitoring
+      - app_network
 
   grafana:
     image: grafana/grafana
