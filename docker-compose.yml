@@ -46,7 +46,7 @@ services:
     env_file:
       - ../comparathor-frontend/.env  # Load frontend .env file
     environment:
-      VITE_API_BASE_URL: "http://backend:8000/api/v1"  # Adjust for Docker network
+      VITE_API_BASE_URL: "http://backend:8000/api"  # Adjust for Docker network
     ports:
       - "4173:4173"
     networks:
